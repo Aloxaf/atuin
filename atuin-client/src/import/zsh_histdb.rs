@@ -59,8 +59,8 @@ pub struct HistDbEntry {
     pub host: Vec<u8>,
     pub dir: Vec<u8>,
     pub argv: Vec<u8>,
-    pub duration: i64,
-    pub exit_status: i64,
+    pub duration: Option<i64>,
+    pub exit_status: Option<i64>,
     pub session: i64,
 }
 
@@ -168,8 +168,8 @@ impl Importer for ZshHistDb {
                 .timestamp(entry.start_time.assume_utc())
                 .command(command)
                 .cwd(cwd)
-                .duration(entry.duration * 1_000_000_000)
-                .exit(entry.exit_status)
+                .duration(entry.duration.map(|d| d * 1_000_000_000).unwrap_or(-1))
+                .exit(entry.exit_status.unwrap_or(-1))
                 .session(session.as_simple().to_string())
                 .hostname(hostname)
                 .build();
